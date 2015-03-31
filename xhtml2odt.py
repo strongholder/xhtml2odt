@@ -106,7 +106,7 @@ import mimetypes
 from StringIO import StringIO
 from optparse import OptionParser
 
-import tidy
+from tidylib import tidy_document
 from lxml import etree
 from PIL import Image
 
@@ -156,11 +156,20 @@ class HTMLFile(object):
         """
         Run the HTML code from the :attr:`html` instance variable through Tidy.
         """
-        tidy_options = dict(output_xhtml=1, add_xml_decl=1, indent=1,
-                            tidy_mark=0, #input_encoding=str(self.charset),
-                            output_encoding='utf8', doctype='auto',
-                            wrap=0, char_encoding='utf8')
-        self.html = str(tidy.parseString(self.html, **tidy_options))
+        tidy_options = {
+            "output-xhtml": 1,
+            "add-xml-decl": 1,
+            "indent": 1,
+            "tidy-mark": 0, #input_encoding=str(self.charset),
+            "output-encoding": 'utf8',
+            "doctype": 'auto',
+            "wrap": 0,
+            "char-encoding": 'utf8'
+        }
+
+        self.html = unicode(tidy_document(self.html, tidy_options))
+        print(self.html)
+        #self.html = str(tidy.parseString(self.html, **tidy_options))
         if not self.html:
             raise ODTExportError(
                         "Tidy could not clean up the document, aborting.")
